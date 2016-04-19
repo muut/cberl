@@ -3,7 +3,7 @@
 %%% @version 1.0.5
 
 -module(cberl).
--vsn("1.0.6").
+-vsn("1.0.7").
 -include("cberl.hrl").
 
 -export([start_link/2, start_link/3, start_link/5, start_link/6, start_link/7]).
@@ -368,7 +368,8 @@ execute(PoolPid, Cmd) ->
 
 http_type(view) -> 0;
 http_type(management) -> 1;
-http_type(raw) -> 2.
+http_type(raw) -> 2;
+http_type(n1ql) -> 3.
 
 http_method(get) -> 0;
 http_method(post) -> 1;

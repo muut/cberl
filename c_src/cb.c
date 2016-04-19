@@ -629,8 +629,10 @@ ERL_NIF_TERM cb_http(ErlNifEnv* env, handle_t* handle, void* obj)
 
     lcb_http_cmd_t cmd;
     cmd.version = 0;
-    cmd.v.v0.path = args->path;
-    cmd.v.v0.npath = strlen(args->path);
+    if (args->type != 3) {
+        cmd.v.v0.path = args->path;
+        cmd.v.v0.npath = strlen(args->path);
+    }
     cmd.v.v0.body = args->body;
     cmd.v.v0.nbody = strlen(args->body);
     cmd.v.v0.method = args->method;

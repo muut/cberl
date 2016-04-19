@@ -12,6 +12,7 @@ cberl_test_() ->
        fun test_append_prepend/1,
        fun test_remove/1,
        fun test_touch/1,
+       fun test_query/1,
        fun test_lock/1,
        fun test_flush/1,
        fun test_flush_1/1]}].
@@ -126,6 +127,13 @@ test_remove(_) ->
     ok = cberl:set(?POOLNAME, Key, 0, Value),
     ok = cberl:remove(?POOLNAME, Key),
     [?_assertEqual({Key, {error,key_enoent}}, cberl:get(?POOLNAME, Key))].
+
+test_query(_) ->
+    Query = "statement=SELECT * FROM default LIMIT 1",
+    ContentType = "application/x-www-form-urlencoded",
+    Result = cberl:http(?POOLNAME, "", Query, ContentType, post, n1ql),
+    [?_assertMatch({ok, 200, _}, Result)
+    ].
 
 test_lock(_) ->
     Key = <<"testkey">>,
