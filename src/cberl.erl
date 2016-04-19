@@ -9,7 +9,7 @@
 -export([start_link/2, start_link/3, start_link/5, start_link/6, start_link/7]).
 -export([stop/1]).
 %% store operations
--export([add/4, add/5, replace/4, replace/5, set/4, set/5, store/7]).
+-export([add/4, add/5, replace/4, replace/5, set/4, set/5, set/6, store/7]).
 %% update operations
 -export([append/3, prepend/3, touch/3, mtouch/3]).
 -export([incr/3, incr/4, incr/5, decr/3, decr/4, decr/5]).
@@ -100,6 +100,13 @@ set(PoolPid, Key, Exp, Value) ->
 -spec set(pid(), key(), integer(), value(), atom()) -> ok | {error, _}.
 set(PoolPid, Key, Exp, Value, TranscoderOpts) ->
     store(PoolPid, set, Key, Value, TranscoderOpts, Exp, 0).
+
+
+%% @equiv store(PoolPid, set, "", Key, Value, Exp)
+-spec set(pid(), key(), integer(), value(), atom(), integer()) -> ok | {error, _}.
+set(PoolPid, Key, Exp, Value, TranscoderOpts, Cas) ->
+    store(PoolPid, set, Key, Value, TranscoderOpts, Exp, Cas).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%% UPDATE OPERATIONS %%%

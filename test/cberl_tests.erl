@@ -5,6 +5,7 @@
 cberl_test_() ->
     [{foreach, fun setup/0, fun clean_up/1,
       [fun test_set_and_get/1,
+       fun test_set_cas/1,
        fun test_replace_add/1,
        fun test_multi_get/1,
        fun test_get_and_touch/1,
@@ -50,6 +51,26 @@ test_set_and_get(_) ->
      ?_assertMatch({Key, _, Value}, Get2),
      ?_assertMatch({Key, _, Value}, Get3)
     ].
+
+test_set_cas(_) ->
+    Key = <<"testkey">>,
+    Value = "testval",
+    Value2 = "testval2",
+    Value3 = "testval3",
+    ok = cberl:set(?POOLNAME, Key, 0, Value), 
+    {_, Cas1, _} = cberl:get(?POOLNAME, Key),
+    ok = cberl:set(?POOLNAME, Key, 0, Value2, standard, Cas1),
+    {_, Cas2, Value2} = cberl:get(?POOLNAME, Key),
+    SetFail = cberl:set(?POOLNAME, Key, 0, Value3, standard, Cas1),
+    {_, Cas2, Value3failed} = cberl:get(?POOLNAME, Key),
+    ok = cberl:set(?POOLNAME, Key, 0, Value3, standard, Cas2),
+    {_, _, Value3Success} = cberl:get(?POOLNAME, Key),
+    [?_assertEqual({error, key_eexists}, SetFail),
+     ?_assertEqual(Value3failed, Value2),
+     ?_assertEqual(Value3Success, Value3)
+    ].
+
+
 
 test_multi_get(_) ->
     Value = "testval",
