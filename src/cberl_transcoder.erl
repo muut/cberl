@@ -3,9 +3,16 @@
 -include("cberl.hrl").
 
 -define('CBE_NONE',     0).
--define('CBE_JSON',     16#0002).
--define('CBE_RAW',      16#0004).
--define('CBE_STR',      16#0008).
+
+%%couchbase standardized flags
+-define('CBE_JSON',     16#02 bsl 24).
+-define('CBE_RAW',      16#03 bsl 24).
+-define('CBE_STR',      16#04 bsl 24).
+
+%%old cberl specific flags (necessary to decode data inserted by older cberl versions)
+-define('CBE_JSON_LEGACY',     16#0002).
+-define('CBE_RAW_LEGACY',      16#0004).
+-define('CBE_STR_LEGACY',      16#0008).
 
 -define(STANDARD_FLAG, json).
 
@@ -29,10 +36,16 @@ encode_value1(_, Value) ->
 -spec decode_value(integer(), value()) -> value().
 decode_value(Flag, Value) when ?'CBE_RAW' band Flag == ?'CBE_RAW' ->
     decode_value(Flag bxor ?'CBE_RAW', binary_to_term(Value));
+decode_value(Flag, Value) when ?'CBE_RAW_LEGACY' band Flag == ?'CBE_RAW_LEGACY' ->
+    decode_value(Flag bxor ?'CBE_RAW_LEGACY', binary_to_term(Value));
 decode_value(Flag, Value) when ?'CBE_JSON' band Flag == ?'CBE_JSON' ->
     decode_value(Flag bxor ?'CBE_JSON', jiffy:decode(Value));
+decode_value(Flag, Value) when ?'CBE_JSON_LEGACY' band Flag == ?'CBE_JSON_LEGACY' ->
+    decode_value(Flag bxor ?'CBE_JSON_LEGACY', jiffy:decode(Value));
 decode_value(Flag, Value) when ?'CBE_STR' band Flag == ?'CBE_STR' ->
     decode_value(Flag bxor ?'CBE_STR', binary_to_list(Value));
+decode_value(Flag, Value) when ?'CBE_STR_LEGACY' band Flag == ?'CBE_STR_LEGACY' ->
+    decode_value(Flag bxor ?'CBE_STR_LEGACY', binary_to_list(Value));
 decode_value(_, Value) ->
     Value.
 
