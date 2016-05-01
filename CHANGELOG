@@ -1,3 +1,10 @@
+-- 1.1.0 (2016-5-1)
+Updated to use modern encoding flags.
+
+Old versions of this library will not be able to read data inserted by this version, but this version will be able to read and decode older data.
+
+See: http://developer.couchbase.com/documentation/server/current/developer-guide/transcoders.html#story-h2-5
+
 -- 1.0.7 (2016-4-18)
 Added support for N1QL HTTP request types
 
